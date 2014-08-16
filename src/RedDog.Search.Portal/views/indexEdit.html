@@ -1,0 +1,147 @@
+﻿<div class="row" ng-if="error">
+    <div class="col-xs-12">
+        <pre class="alert alert-danger">{{ error | json }}</pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-6">
+        <div class="widget" cg-busy="{ message:'Loading Your Data', promise:savingPromise, templateUrl: 'partials/loading.html' }">
+            <div class="widget-title">
+                <i class="fa fa-users"></i> Index
+            </div>
+            <div class="widget-body medium">
+                <form role="form">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" class="form-control" ng-model="index.name" ngrequired>
+                    </div>
+                    <div class="form-group">
+                        <label>Default Scoring Profile</label>
+                        <input type="text" class="form-control" ng-model="index.defaultScoringProfile">
+                    </div>
+                </form>
+
+                <input type="submit" value="Save " class="btn btn-primary pull-right" ng-click="save()" ng-disabled="index.name == null || index.name.length == 0" />
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="widget" cg-busy="{ promise:savingPromise, templateUrl: 'partials/loading.html' }">
+            <div class="widget-title">
+                <i class="fa fa-users"></i> CORS
+            </div>
+            <div class="widget-body medium">
+                <form role="form">
+                    <div class="form-group">
+                        <label>Allowed Origins</label>
+                        <input type="text" class="form-control" ng-model="index.corsOptions.allowedOrigins">
+                    </div>
+                    <div class="form-group">
+                        <label>Max. Age In Seconds</label>
+                        <input type="text" class="form-control" ng-model="index.corsOptions.maxAgeInSeconds">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-12">
+        <div class="widget" cg-busy="{ promise:savingPromise, templateUrl: 'partials/loading.html' }">
+            <div class="widget-title">
+                <i class="fa fa-image"></i> Fields
+                <a class="btn btn-sm btn-info pull-right" ng-click="newField()">New</a>
+                <div class="clearfix"></div>
+            </div>
+            <div class="widget-body large no-padding">
+                <div class="message" ng-if="(index.fields == null || index.fields.length == 0)">
+                    <div class="alert alert-warning">The index does not have any fields.</div>
+                </div>
+                <div class="table-responsive" ng-if="index.fields != null && index.fields.length > 0">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Key</th>
+                                <th>Searchable</th>
+                                <th>Retrievable</th>
+                                <th>Sortable</th>
+                                <th>Facetable</th>
+                                <th>Filterable</th>
+                                <th>Suggestions</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="field in index.fields">
+                                <td><input type="text" ng-model="field.name" class="form-control" /></td>
+                                <td>
+                                    <select ng-model="field.type" class="form-control" ng-options="fieldType.name as fieldType.name for fieldType in fieldTypes"></select>
+                                </td>
+                                <td><input type="checkbox" name="key" ng-model="field.key" ng-change="fieldKeySelected(field)" /></td>
+                                <td><input type="checkbox" ng-model="field.searchable" /></td>
+                                <td><input type="checkbox" ng-model="field.retrievable" /></td>
+                                <td><input type="checkbox" ng-model="field.sortable" /></td>
+                                <td><input type="checkbox" ng-model="field.facetable" /></td>
+                                <td><input type="checkbox" ng-model="field.filterable" /></td>
+                                <td><input type="checkbox" ng-model="field.suggestions" /></td>
+                                <td>
+                                    <button class="btn btn-xs btn-danger" ng-click="deleteField(field);">
+                                        <i class="fa fa-trash-o"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <loading ng-if="loading"></loading>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-12">
+        <div class="widget" cg-busy="{ promise:savingPromise, templateUrl: 'partials/loading.html' }">
+            <div class="widget-title">
+                <i class="fa fa-image"></i> Scoring Profiles
+                <a class="btn btn-sm btn-info pull-right" ng-click="newScoringProfile()">New</a>
+                <div class="clearfix"></div>
+            </div>
+            <div class="widget-body medium no-padding">
+                <div class="message" ng-if="(index.scoringProfiles == null || index.scoringProfiles.length == 0)">
+                    <div class="alert alert-warning">The index does not have any scoring profiles.</div>
+                </div>
+                <div class="table-responsive" ng-if="index.scoringProfiles != null && index.scoringProfiles.length > 0">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Weights</th>
+                                <th>Functions</th>
+                                <th>Function Aggregation</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="scoringProfile in index.scoringProfiles">
+                                <td>{{ scoringProfile.name }}</td>
+                                <td>{{ scoringProfile.weights != null ? scoringProfile.weights.length : 0 }} weights</td>
+                                <td>{{ scoringProfile.functions != null ? scoringProfile.functions.length : 0 }} functions</td>
+                                <td>{{ scoringProfile.functionAggregation }}</td>
+                                <td>
+                                    <button class="btn btn-xs btn-info" ng-click="editScoringProfile(scoringProfile);">
+                                        <i class="fa fa-wrench"></i> Edit
+                                    </button>
+                                    <button class="btn btn-xs btn-danger" ng-click="deleteScoringProfile(scoringProfile);">
+                                        <i class="fa fa-trash-o"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <loading ng-if="loading"></loading>
+            </div>
+        </div>
+    </div>
+</div>

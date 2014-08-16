@@ -1,0 +1,41 @@
+﻿.page-content {
+    padding-top: 15px;
+}
+
+.table tr:hover {
+    cursor: pointer;
+}
+
+ul.sidebar .sidebar-list a.active {
+    color: #fff;
+    border-left: 3px solid #e99d1a;
+}
+
+
+.widget .widget-body.xlarge {
+    height: 450px;
+    overflow-y: auto;
+}
+
+.gridStyle {
+    border: 1px solid rgb(212,212,212);
+    height: 450px;
+}
+
+
+.drop-box {
+	background: #F8F8F8;
+	border: 5px dashed #DDD;
+	width: 100%;
+	height: 250px; 
+	text-align: center;
+	padding-top: 35px; 
+}
+
+.drop-box.dragover {
+	border: 5px dashed blue;
+}
+
+.drop-box.dragover-err {
+	border: 5px dashed red;
+}

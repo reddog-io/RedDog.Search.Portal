@@ -1,0 +1,21 @@
+﻿<div class="row" ng-if="error">
+    <div class="col-xs-12">
+        <pre class="alert alert-danger">{{ error | json }}</pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="widget">
+            <div class="widget-title">
+                <i class="fa fa-users"></i> Import
+            </div>
+            <div class="widget-body medium no-padding">
+                <div class="row">
+                    <div class="col-lg-12" style="margin: 0px; padding: 0;">
+                        <div class="drop-box" ng-file-drop="onFileSelect($files)" ng-file-drag-over-class="dragover">Drop any *.csv file here with columns that match the search index fields.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

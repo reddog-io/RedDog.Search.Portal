@@ -1,0 +1,56 @@
+﻿<div class="row" ng-if="error">
+    <div class="col-xs-12">
+        <pre class="alert alert-danger">{{ error | json }}</pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="widget">
+            <div class="widget-title">
+                <i class="fa fa-tasks"></i> Indexes
+                <a href="#" class="btn btn-primary pull-right">New</a>
+            </div>
+            <div class="widget-body large no-padding">
+                <div class="message" ng-if="!loading && (indexes == null || indexes.length == 0)">
+                    <div class="alert alert-warning">The service does not have any indexes. You can start by creating a new index.</div>
+                </div>
+                <div class="table-responsive" ng-if="!loading && indexes != null && indexes.length > 0">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Fields</th>
+                                <th>Documents</th>
+                                <th>Size</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="index in indexes">
+                                <td>{{ index.name }}</td>
+                                <td>{{ index.fields.length }}</td>
+                                <td>{{ index.stats.documentCount }}</td>
+                                <td>{{ index.stats.storageSize | bytes }}</td>
+                                <td>
+                                    <button class="btn btn-xs btn-default" ng-click="searchIndex(index);">
+                                        <i class="fa fa-search"></i> Search
+                                    </button>
+                                    <button class="btn btn-xs btn-info" ng-click="selectIndex(index);">
+                                        <i class="fa fa-wrench"></i> Edit
+                                    </button>
+                                    <button class="btn btn-xs btn-warning" ng-click="importIndex(index);">
+                                        <i class="fa fa-table"></i> Import
+                                    </button>
+                                    <button class="btn btn-xs btn-danger" ng-click="deleteIndex(index);">
+                                        <i class="fa fa-trash-o"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <loading ng-if="loading"></loading>
+            </div>
+        </div>
+    </div>
+</div>

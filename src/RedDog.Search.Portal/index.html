@@ -1,0 +1,84 @@
+﻿<!doctype html>
+<html lang="en" ng-app="reddog.search">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RedDog Search Portal</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="js/angular-busy.min.css">
+    <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="css/dashboard/dashboard.css">
+    <link rel="stylesheet" type="text/css" href="css/themes/red.css">
+    <link rel="stylesheet" type="text/css" href="css/reddog.css">
+    <link rel="stylesheet" type="text/css" href="js/ng-grid.css">
+</head>
+<body ng-controller="MasterCtrl">
+    <div id="page-wrapper" ng-class="{'active': toggle}" ng-cloak>
+        <div id="sidebar-wrapper">
+            <ul class="sidebar">
+                <li class="sidebar-main">
+                    <a href="#" ng-click="toggleSidebar()">
+                        RedDog Search
+                        <span class="menu-icon glyphicon glyphicon-transfer"></span>
+                    </a>
+                </li>
+                <li class="sidebar-title">
+                    <span>INDEXES</span>
+                </li>
+                <li class="sidebar-list">
+                    <a href="#/indexes" ng-class="{ 'active': currentAction == 'indexes' }">Overview <span class="active menu-icon fa fa-list-alt"></span></a>
+                </li>
+                <li class="sidebar-list">
+                    <a href="#/indexes/new" ng-class="{ 'active': currentAction == 'index.new' }">New <span class="menu-icon fa fa-plus-square"></span></a>
+                </li>
+                <li class="sidebar-title" ng-if="currentParams.indexName">
+                    <span>{{ currentParams.indexName | uppercase }}</span>
+                </li>
+                <li class="sidebar-list" ng-if="currentParams.indexName">
+                    <a href="#/indexes/edit/{{ currentParams.indexName }}" ng-class="{ 'active': currentAction == 'index.edit' }">Edit<span class="menu-icon fa fa-pencil"></span></a>
+                </li>
+                <li class="sidebar-list" ng-if="currentParams.indexName">
+                    <a href="#/indexes/import/{{ currentParams.indexName }}" ng-class="{ 'active': currentAction == 'index.import' }">Import<span class="menu-icon fa fa-table"></span></a>
+                </li>
+                <li class="sidebar-list" ng-if="currentParams.indexName">
+                    <a href="#/indexes/search/{{ currentParams.indexName }}" ng-class="{ 'active': currentAction == 'index.search' }">Search<span class="menu-icon fa fa-search"></span></a>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="col-xs-4">
+                    <a href="https://github.com/Ehesp/Responsive-Dashboard" target="_blank">
+                        Github
+                    </a>
+                </div>
+                <div class="col-xs-4">
+                    <a href="#" target="_blank">
+                        About
+                    </a>
+                </div>
+                <div class="col-xs-4">
+                    <a href="#">
+                        Support
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div id="content-wrapper">
+            <div class="page-content" ng-view cg-busy="{ message: loadingMessage, promise: loadingPromise, templateUrl: 'partials/loading.html' }">
+
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="js/angular-file-upload-shim.min.js"></script>
+    <script type="text/javascript" src="js/angular.min.js"></script>
+    <script type="text/javascript" src="js/angular-file-upload.min.js"></script> 
+    <script type="text/javascript" src="js/angular-busy.min.js"></script>
+    <script type="text/javascript" src="js/angular-route.min.js"></script>
+    <script type="text/javascript" src="js/angular-cookies.js"></script>
+    <script type="text/javascript" src="js/ng-bootstrap-tpls.min.js"></script>
+    <script type="text/javascript" src="js/ng-grid.min.js"></script>
+    <script type="text/javascript" src="js/createDialog.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
+</body>
+</html>

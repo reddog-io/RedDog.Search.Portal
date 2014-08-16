@@ -1,0 +1,107 @@
+﻿<div class="row" ng-if="error">
+    <div class="col-xs-12">
+        <pre class="alert alert-danger">{{ error | json }}</pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-6">
+        <div class="widget" cg-busy="{ message:'Loading Your Data', promise:savingPromise, templateUrl: 'partials/loading.html' }">
+            <div class="widget-title">
+                <i class="fa fa-users"></i> Scoring Profile
+            </div>
+            <div class="widget-body medium">
+                <form role="form">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" class="form-control" ng-model="scoringProfile.name" ngrequired>
+                    </div>
+                </form>
+
+                <input type="submit" value="Save " class="btn btn-primary pull-right" ng-click="save()" ng-disabled="index.name == null || index.name.length == 0" />
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-12">
+        <div class="widget" cg-busy="{ promise:savingPromise, templateUrl: 'partials/loading.html' }">
+            <div class="widget-title">
+                <i class="fa fa-image"></i> Weights
+                <a class="btn btn-sm btn-info pull-right" ng-click="newWeight()">New</a>
+                <div class="clearfix"></div>
+            </div>
+            <div class="widget-body large no-padding">
+                <div class="message" ng-if="(scoringProfile.text == null || scoringProfile.text.weights == null || scoringProfile.text.weights.length == 0)">
+                    <div class="alert alert-warning">The index does not have any weights.</div>
+                </div>
+                <div class="table-responsive" ng-if="scoringProfile.text == null || scoringProfile.text.weights != null && scoringProfile.text.weights.length > 0">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Field Name</th>
+                                <th>Relative Weight Value</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="(name, value) in scoringProfile.text.weights">
+                                <td><input type="text" ng-model="name" /></td>
+                                <td><input type="text" ng-model="value" /></td>
+                                <td>
+                                    <button class="btn btn-xs btn-danger" ng-click="deleteWeight(name);">
+                                        <i class="fa fa-trash-o"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <loading ng-if="loading"></loading>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-12">
+        <div class="widget" cg-busy="{ promise:savingPromise, templateUrl: 'partials/loading.html' }">
+            <div class="widget-title">
+                <i class="fa fa-image"></i> Functions
+                <a class="btn btn-sm btn-info pull-right" ng-click="newFunction()">New</a>
+                <div class="clearfix"></div>
+            </div>
+            <div class="widget-body medium no-padding">
+                <div class="message" ng-if="(scoringProfile.functions == null || scoringProfile.functions.length == 0)">
+                    <div class="alert alert-warning">The index does not have any functions.</div>
+                </div>
+                <div class="table-responsive" ng-if="scoringProfile.functions != null && scoringProfile.functions.length > 0">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Weights</th>
+                                <th>Functions</th>
+                                <th>Function Aggregation</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="scoringProfile in scoringProfile.functions">
+                                <td>{{ scoringProfile.name }}</td>
+                                <td>{{ scoringProfile.weights != null ? scoringProfile.weights.length : 0 }} weights</td>
+                                <td>{{ scoringProfile.functions != null ? scoringProfile.functions.length : 0 }} functions</td>
+                                <td>{{ scoringProfile.functionAggregation }}</td>
+                                <td>
+                                    <button class="btn btn-xs btn-info" ng-click="editScoringProfile(scoringProfile);">
+                                        <i class="fa fa-wrench"></i> Edit
+                                    </button>
+                                    <button class="btn btn-xs btn-danger" ng-click="deleteScoringProfile(scoringProfile);">
+                                        <i class="fa fa-trash-o"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <loading ng-if="loading"></loading>
+            </div>
+        </div>
+    </div>
+</div>
