@@ -7,7 +7,7 @@
     <div class="col-lg-12">
         <div class="widget">
             <div class="widget-title">
-                <i class="fa fa-users"></i> Search
+                <i class="fa fa-search"></i> Search
             </div>
             <div class="widget-body xlarge">
                 <div class="row">
@@ -97,7 +97,7 @@
     <div class="col-lg-2" ng-show="facets">
         <div class="widget">
             <div class="widget-title">
-                <i class="fa fa-users"></i> Facets
+                <i class="fa fa-check-square-o"></i> Facets
             </div>
             <div class="widget-body xlarge no-padding">
                 <pre>{{ facets | json }}</pre>
@@ -107,7 +107,7 @@
     <div ng-class="{ 'col-lg-10': facets != null, 'col-lg-12': facets == null }">
         <div class="widget">
             <div class="widget-title">
-                <i class="fa fa-users"></i> Results <span>({{ count }} results)</span>
+                <i class="fa fa-bars"></i> Results <span>({{ count }} results)</span>
             </div>
             <div class="widget-body xlarge no-padding">
                 <div class="message" ng-if="!loading && (results == null || results.length == 0)">
@@ -131,7 +131,6 @@
                         </tbody>
                     </table>
                 </div>
-                <loading ng-if="loading"></loading>
             </div>
         </div>
     </div>

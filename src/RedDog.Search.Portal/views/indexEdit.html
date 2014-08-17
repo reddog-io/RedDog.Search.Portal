@@ -7,7 +7,7 @@
     <div class="col-lg-6">
         <div class="widget" cg-busy="{ message:'Loading Your Data', promise:savingPromise, templateUrl: 'partials/loading.html' }">
             <div class="widget-title">
-                <i class="fa fa-users"></i> Index
+                <i class="fa fa-database"></i> Index
             </div>
             <div class="widget-body medium">
                 <form role="form">
@@ -17,7 +17,9 @@
                     </div>
                     <div class="form-group">
                         <label>Default Scoring Profile</label>
-                        <input type="text" class="form-control" ng-model="index.defaultScoringProfile">
+                        <select ng-model="index.defaultScoringProfile" class="form-control" ng-options="s.name as s.name for s in index.scoringProfiles">
+                            <option value=""></option>
+                        </select>
                     </div>
                 </form>
 
@@ -29,7 +31,7 @@
     <div class="col-lg-6">
         <div class="widget" cg-busy="{ promise:savingPromise, templateUrl: 'partials/loading.html' }">
             <div class="widget-title">
-                <i class="fa fa-users"></i> CORS
+                <i class="fa fa-globe"></i> CORS
             </div>
             <div class="widget-body medium">
                 <form role="form">
@@ -46,10 +48,10 @@
         </div>
     </div>
 
-    <div class="col-lg-12">
+    <div class="col-lg-12" ng-hide="index.name == null || index.name == ''">
         <div class="widget" cg-busy="{ promise:savingPromise, templateUrl: 'partials/loading.html' }">
             <div class="widget-title">
-                <i class="fa fa-image"></i> Fields
+                <i class="fa fa-edit"></i> Fields
                 <a class="btn btn-sm btn-info pull-right" ng-click="newField()">New</a>
                 <div class="clearfix"></div>
             </div>
@@ -100,10 +102,10 @@
         </div>
     </div>
 
-    <div class="col-lg-12">
+    <div class="col-lg-12" ng-hide="isNew">
         <div class="widget" cg-busy="{ promise:savingPromise, templateUrl: 'partials/loading.html' }">
             <div class="widget-title">
-                <i class="fa fa-image"></i> Scoring Profiles
+                <i class="fa fa-signal"></i> Scoring Profiles
                 <a class="btn btn-sm btn-info pull-right" ng-click="newScoringProfile()">New</a>
                 <div class="clearfix"></div>
             </div>
@@ -125,7 +127,7 @@
                         <tbody>
                             <tr ng-repeat="scoringProfile in index.scoringProfiles">
                                 <td>{{ scoringProfile.name }}</td>
-                                <td>{{ scoringProfile.weights != null ? scoringProfile.weights.length : 0 }} weights</td>
+                                <td>{{ scoringProfile.text.weights != null ? scoringProfile.text.weights.length : 0 }} weights</td>
                                 <td>{{ scoringProfile.functions != null ? scoringProfile.functions.length : 0 }} functions</td>
                                 <td>{{ scoringProfile.functionAggregation }}</td>
                                 <td>

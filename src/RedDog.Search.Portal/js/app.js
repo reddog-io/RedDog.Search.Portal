@@ -122,8 +122,8 @@ angular.module('reddog.search').controller('IndexesCtrl', function ($scope, $loc
  */
 angular.module('reddog.search').controller('IndexEditCtrl', function ($scope, $route, $routeParams, $location, $q, indexService, $rootScope) {
     var _this = this;
-    $scope.index = { fields: [], scoringProfiles: [] };
-    $scope.isNew      = true;
+
+    // Fill combo boxes.
     $scope.fieldTypes = [
         { name: "Edm.String" },
         { name: "Collection(Edm.String)", },
@@ -145,15 +145,24 @@ angular.module('reddog.search').controller('IndexEditCtrl', function ($scope, $r
         { name: "logarithmic" }
     ];
 
-    // Are we in edit mode?
-    if (angular.isDefined($routeParams.indexName)) {
-        $scope.isNew = false;
+    // Get the current index name.
+    var currentIndexName = $routeParams.indexName;
 
-        // Load the index.
-        indexService.getIndex($routeParams.indexName)
+    // Hack: handle return from scoring profile edit page.
+    if ($rootScope.currentIndex != null && $rootScope.currentIndex.name == currentIndexName) {
+        $scope.isNew = false;
+        $scope.index = $rootScope.currentIndex;
+    }
+    else if (currentIndexName != null) {
+        $scope.isNew = false;
+        indexService.getIndex(currentIndexName)
             .then(function (index) {
                 $scope.index = index;
             });
+    }
+    else {
+        $scope.isNew = true;
+        $scope.index = { fields: [], scoringProfiles: [] };
     }
 
     // Create a new field.
@@ -176,22 +185,21 @@ angular.module('reddog.search').controller('IndexEditCtrl', function ($scope, $r
 
     // Create a new scoringProfile.
     $scope.newScoringProfile = function () {
-        var sp = { name: 'My scoring profile' };
+        var sp = {
+            name: 'My scoring profile',
+            text: {
+                 weights: []
+            }
+        };
         $scope.index.scoringProfiles.push(sp);
         $scope.editScoringProfile(sp);
     };
 
     // Edit an existing scoringProfile.
     $scope.editScoringProfile = function (scoringProfile) {
-        //createDialog('/views/scoringProfileEdit.html', {
-        //    id: 'simpleDialog',
-        //    title: 'Edit Scoring Profile',
-        //    controller: 'ScoringProfileEditCtrl',
-        //    backdrop: true,
-        //    success: { label: 'Success', fn: function () { console.log('Simple modal closed'); } }
-        //}, { scoringProfile: scoringProfile });
         // Quick hack to pass around the scoring profile.
-        $rootScope.scoringProfile = scoringProfile;
+        $rootScope.currentIndex = $scope.index;
+        $rootScope.currentScoringProfile = scoringProfile;
 
         // Open the edit page.
         $location.path("/indexes/edit/" + $scope.index.name + '/scoringProfile');
@@ -226,31 +234,96 @@ angular.module('reddog.search').controller('IndexEditCtrl', function ($scope, $r
 /**
  * Scoring Profile edit.
  */
-angular.module('reddog.search').controller('ScoringProfileEditCtrl', function ($scope, $rootScope) {
-    $scope.scoringProfile = $rootScope.scoringProfile;
-    $scope.scoringProfileType = [
+angular.module('reddog.search').controller('ScoringProfileEditCtrl', function ($scope, $rootScope, $route, $routeParams, $location, createDialog) {
+    $scope.index = $rootScope.currentIndex;
+    $scope.scoringProfile = $rootScope.currentScoringProfile;
+
+    // Redirect to index or homepage if we don't have the current objects.
+    if ($scope.index == null || $scope.scoringProfile == null) {
+        if (angular.isDefined($routeParams.indexName)) {
+            $location.path("/indexes/edit/" + $routeParams.indexName);
+            return;
+        } else {
+            $location.path('/indexes');
+            return;
+        }
+    }
+
+    // Combo.
+    $scope.functionAggregationTypes = [
+        { name: 'sum' },
+        { name: 'average' },
+        { name: 'minimum' },
+        { name: 'maximum' },
+        { name: 'firstMatching' }
+    ];
+
+    // Default for function aggregation.
+    if ($scope.scoringProfile.functionAggregation == null) {
+        $scope.scoringProfile.functionAggregation = 'sum';
+    }
+
+    // Manage weights.
+    $scope.addWeight = function () {
+        $scope.scoringProfile.text.weights.push({ });
+    };
+    $scope.deleteWeight = function (weight) {
+        $scope.scoringProfile.text.weights.splice($scope.scoringProfile.text.weights.indexOf(weight), 1);
+    };
+
+    // Add a new function with default values.
+    $scope.addFunction = function () {
+        var func = { type: 'magnitude', interpolation: 'linear' };
+        if ($scope.index != null && $scope.index.fields != null && $scope.index.fields.length > 0)
+            func.fieldName = $scope.index.fields[0].name;
+        $scope.scoringProfile.functions.push(func);
+        $scope.editFunction(func);
+    };
+
+    // Show the edit dialog for the function.
+    $scope.editFunction = function (func) {
+        // Copy the function for editing.
+        var editFunc = angular.copy(func);
+
+        // Show the edit dialog.
+        createDialog('/views/functionEdit.html', {
+            id: 'simpleDialog', title: 'Edit Function', controller: 'FunctionEditCtrl', backdrop: true,
+            success: { label: 'OK', fn: function() {
+                var position = $scope.scoringProfile.functions.indexOf(func);
+
+                // Remove the original function
+                $scope.deleteFunction(func);
+
+                // Insert updated function.
+                $scope.scoringProfile.functions.splice(position, 0, editFunc);
+            } }
+        }, { func: editFunc, index: $scope.index });
+    };
+
+    // Delete the function from the scoring profile.
+    $scope.deleteFunction = function (func) {
+        $scope.scoringProfile.functions.splice($scope.scoringProfile.functions.indexOf(func), 1);
+    };
+});
+
+
+/**
+ * Function edit.
+ */
+angular.module('reddog.search').controller('FunctionEditCtrl', function ($scope, $rootScope, index, func) {
+    $scope.index = index;
+    $scope.func = func;
+    $scope.functionTypes = [
         { name: "magnitude" },
         { name: "freshness", },
         { name: "distance" }
     ];
-    $scope.scoringProfileInterpolations = [
+    $scope.interpolationTypes = [
         { name: "constant" },
         { name: "linear", },
         { name: "quadratic" },
         { name: "logarithmic" }
     ];
-    $scope.addWeight = function () {
-        $scope.scoringProfile.weights.push({});
-    };
-    $scope.deleteWeight = function (weight) {
-        $scope.scoringProfile.weights.splice($scope.scoringProfile.weights.indexOf(weight), 1);
-    };
-    $scope.addFunction = function () {
-        $scope.scoringProfile.functions.push({});
-    };
-    $scope.deleteFunction = function (weight) {
-        $scope.scoringProfile.functions.splice($scope.scoringProfile.functions.indexOf(weight), 1);
-    };
 });
 
 /**
@@ -266,8 +339,7 @@ angular.module('reddog.search').controller('IndexImportCtrl', function ($scope, 
                 method: 'PUT',
                 file: file
             }).success(function (data, status, headers, config) {
-                // file is uploaded successfully
-                console.log(data);
+
             });
         }
     };
@@ -319,27 +391,71 @@ angular.module('reddog.search').controller('IndexSearchCtrl', function ($scope, 
 });
 
 /**
- * Indexes overview.
+ * Index Service.
  */
 angular.module('reddog.search').service('indexService', function ($http, $q) {
+    var self = this;
+
+    // Convert the scoring profile weight to an array. This makes it easier to work with ng-repeat.
+    this.parseIndexForRead = function (index) {
+        if (index.scoringProfiles != null && index.scoringProfiles.length > 0) {
+            angular.forEach(index.scoringProfiles, function (sp) {
+                if (sp != null && sp.text != null && sp.text.weights != null) {
+                    var arr = new Array();
+                    for (var i in sp.text.weights) {
+                        arr.push({ key: i, value: sp.text.weights[i] });
+                    }
+                    sp.text.weights = arr;
+                }
+            });
+        }
+        return index;
+    };
+
+    // When persisting an index, we need to have the weights as an object.
+    this.prepareIndexForWrite = function (index) {
+        var idx = angular.copy(index);
+        if (idx.scoringProfiles != null && idx.scoringProfiles.length > 0) {
+            angular.forEach(idx.scoringProfiles, function (sp) {
+                if (sp != null && sp.text != null && sp.text.weights != null && sp.text.weights.length > 0) {
+                    var obj = {};
+                    for (var i = 0; i < sp.text.weights.length; ++i)
+                        obj[sp.text.weights[i].key] = sp.text.weights[i].value;
+                    sp.text.weights = obj;
+                }
+            });
+        }
+        return idx;
+    };
+
+    // Get a list of indexes.
     this.getIndexes = function () {
         var d = $q.defer();
         $http.get('api/indexes/', { cache: false }).success(function (data) {
+            angular.forEach(data.body, function(index) {
+                self.parseIndexForRead(index);
+            });
+
             d.resolve(data.body);
         }).error(function (data) {
             d.reject(data);
         });
         return d.promise;
     };
+
+    // Get the details of a specific index.
     this.getIndex = function (indexName) {
         var d = $q.defer();
         $http.get('api/indexes/' + indexName, { cache: false }).success(function (data) {
+            self.parseIndexForRead(data.body);
             d.resolve(data.body);
         }).error(function (data) {
             d.reject(data);
         });
         return d.promise;
     };
+
+    // Get the statistics of an index.
     this.getIndexStatistics = function (indexName) {
         var d = $q.defer();
         $http.get('api/indexes/' + indexName + "/stats", { cache: false }).success(function (data) {
@@ -349,24 +465,30 @@ angular.module('reddog.search').service('indexService', function ($http, $q) {
         });
         return d.promise;
     };
+
+    // Create a new index.
     this.createIndex = function (index) {
         var d = $q.defer();
-        $http.post('api/indexes', index).success(function (data) {
+        $http.post('api/indexes', this.prepareIndexForWrite(index)).success(function (data) {
             d.resolve(data.body);
         }).error(function (data) {
             d.reject(data);
         });
         return d.promise;
     };
+
+    // Update an existing index.
     this.updateIndex = function (index) {
         var d = $q.defer();
-        $http.put('api/indexes', index).success(function (data) {
+        $http.put('api/indexes', this.prepareIndexForWrite(index)).success(function (data) {
             d.resolve(data.body);
         }).error(function (data) {
             d.reject(data);
         });
         return d.promise;
     };
+
+    // Delete an index.
     this.deleteIndex = function (indexName) {
         var d = $q.defer();
         $http.delete('api/indexes/' + indexName).success(function (data) {
@@ -376,6 +498,8 @@ angular.module('reddog.search').service('indexService', function ($http, $q) {
         });
         return d.promise;
     };
+
+    // Launch a search query.
     this.search = function (indexName, query) {
         var d = $q.defer();
         $http.get('api/search/' + indexName, {

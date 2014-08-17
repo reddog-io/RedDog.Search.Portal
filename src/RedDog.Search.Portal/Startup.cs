@@ -4,6 +4,7 @@ using Autofac;
 using Autofac.Integration.WebApi;
 using Microsoft.Owin;
 using Microsoft.WindowsAzure;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Owin;
 using RedDog.Search.Http;
@@ -45,6 +46,7 @@ namespace RedDog.Search.Portal
                 new AutofacWebApiDependencyResolver(container);
             config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
             config.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
 
             // Owin.
             app.UseWebApi(config);
