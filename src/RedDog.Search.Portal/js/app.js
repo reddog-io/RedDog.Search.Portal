@@ -276,6 +276,8 @@ angular.module('reddog.search').controller('ScoringProfileEditCtrl', function ($
         var func = { type: 'magnitude', interpolation: 'linear' };
         if ($scope.index != null && $scope.index.fields != null && $scope.index.fields.length > 0)
             func.fieldName = $scope.index.fields[0].name;
+        if ($scope.scoringProfile.functions == null)
+            $scope.scoringProfile.functions = new Array();
         $scope.scoringProfile.functions.push(func);
         $scope.editFunction(func);
     };

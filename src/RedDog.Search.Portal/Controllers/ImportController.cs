@@ -112,9 +112,9 @@ namespace RedDog.Search.Portal.Controllers
                                 }
                                 else if (field.Type == FieldType.GeographyPoint)
                                 {
-                                    if (row[i].Contains('-'))
+                                    if (row[i].Contains('|'))
                                     {
-                                        var coordinates = row[i].Split('-');
+                                        var coordinates = row[i].Split('|');
                                         operation.Properties.Add(columnName, new { type = "Point", coordinates = new[]
                                         {
                                             double.Parse(coordinates[0], CultureInfo.InvariantCulture), // Latitude
