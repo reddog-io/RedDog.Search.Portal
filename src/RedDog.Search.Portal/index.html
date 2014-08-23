@@ -10,7 +10,6 @@
     <link rel="stylesheet" type="text/css" href="css/dashboard/dashboard.css">
     <link rel="stylesheet" type="text/css" href="css/themes/red.css">
     <link rel="stylesheet" type="text/css" href="css/reddog.css">
-    <link rel="stylesheet" type="text/css" href="js/ng-grid.css">
 </head>
 <body ng-controller="MasterCtrl">
     <div id="page-wrapper" ng-class="{'active': toggle}" ng-cloak>
@@ -42,6 +41,9 @@
                 </li>
                 <li class="sidebar-list" ng-if="currentParams.indexName">
                     <a href="#/indexes/search/{{ currentParams.indexName }}" ng-class="{ 'active': currentAction == 'index.search' }">Search<span class="menu-icon fa fa-search"></span></a>
+                </li>
+                <li class="sidebar-list" ng-if="currentParams.indexName">
+                    <a href="#/indexes/suggestions/{{ currentParams.indexName }}" ng-class="{ 'active': currentAction == 'index.suggestions' }">Suggestions<span class="menu-icon fa fa-th"></span></a>
                 </li>
             </ul>
             <div class="sidebar-footer">

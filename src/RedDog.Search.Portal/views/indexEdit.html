@@ -10,20 +10,30 @@
                 <i class="fa fa-database"></i> Index
             </div>
             <div class="widget-body medium">
-                <form role="form">
-                    <div class="form-group">
-                        <label>Name</label>
-                        <input type="text" class="form-control" ng-model="index.name" ngrequired>
+                <form role="form" ng-submit="save()">
+                    <div class="row">
+                        <div class="col-lg-12">
+
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input type="text" class="form-control" ng-model="index.name" ngrequired>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label>Default Scoring Profile</label>
+                                <select ng-model="index.defaultScoringProfile" class="form-control" ng-options="s.name as s.name for s in index.scoringProfiles">
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Default Scoring Profile</label>
-                        <select ng-model="index.defaultScoringProfile" class="form-control" ng-options="s.name as s.name for s in index.scoringProfiles">
-                            <option value=""></option>
-                        </select>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <input type="submit" value="Save" class="btn btn-primary" ng-disabled="index.name == null || index.name.length == 0" />
+                        </div>
                     </div>
                 </form>
-
-                <input type="submit" value="Save " class="btn btn-primary pull-right" ng-click="save()" ng-disabled="index.name == null || index.name.length == 0" />
             </div>
         </div>
     </div>
@@ -35,13 +45,19 @@
             </div>
             <div class="widget-body medium">
                 <form role="form">
-                    <div class="form-group">
-                        <label>Allowed Origins</label>
-                        <input type="text" class="form-control" ng-model="index.corsOptions.allowedOrigins">
-                    </div>
-                    <div class="form-group">
-                        <label>Max. Age In Seconds</label>
-                        <input type="text" class="form-control" ng-model="index.corsOptions.maxAgeInSeconds">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-12">
+                            <div class="form-group">
+                                <label>Allowed Origins</label>
+                                <input type="text" class="form-control" ng-model="index.corsOptions.allowedOrigins">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-12">
+                            <div class="form-group">
+                                <label>Max. Age In Seconds</label>
+                                <input type="text" class="form-control" ng-model="index.corsOptions.maxAgeInSeconds">
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>

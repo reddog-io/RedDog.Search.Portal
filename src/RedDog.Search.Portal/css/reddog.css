@@ -13,8 +13,12 @@ ul.sidebar .sidebar-list a.active {
 
 
 .widget .widget-body.xlarge {
-    height: 450px;
+    max-height: 450px;
     overflow-y: auto;
+}
+
+.form-group {
+    margin-bottom: 0;
 }
 
 .gridStyle {

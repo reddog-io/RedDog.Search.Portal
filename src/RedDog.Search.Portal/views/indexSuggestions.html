@@ -7,78 +7,54 @@
     <div class="col-lg-12">
         <div class="widget">
             <div class="widget-title">
-                <i class="fa fa-search"></i> Search
+                <i class="fa fa-th"></i> Suggestions
             </div>
             <div class="widget-body xlarge">
-                <form role="form" ng-submit="search()">
+                <form role="form" ng-submit="suggestions()">
                     <div class="row">
                         <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
                             <div class="form-group">
-                                <label>Query</label>
-                                <input type="text" class="form-control" ng-model="searchQuery.query">
+                                <label>Search</label>
+                                <input type="text" class="form-control" ng-model="suggestionsQuery.search">
                             </div>
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
                             <div class="form-group">
                                 <label>Search Fields</label>
-                                <input type="text" class="form-control" ng-model="searchQuery.searchFields">
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-                            <div class="form-group">
-                                <label>Mode</label>
-                                <select ng-model="searchQuery.mode" class="form-control" ng-options="mode.name as mode.name for mode in modes"></select>
+                                <input type="text" class="form-control" ng-model="suggestionsQuery.searchFields">
                             </div>
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
                             <div class="form-group">
                                 <label>Select</label>
-                                <input type="text" class="form-control" ng-model="searchQuery.select">
+                                <input type="text" class="form-control" ng-model="suggestionsQuery.select">
                             </div>
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
                             <div class="form-group">
                                 <label>Order By</label>
-                                <input type="text" class="form-control" ng-model="searchQuery.orderBy">
+                                <input type="text" class="form-control" ng-model="suggestionsQuery.orderBy">
                             </div>
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
                             <div class="form-group">
-                                <label>Facet</label>
-                                <input type="text" class="form-control" ng-model="searchQuery.facet">
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-                            <div class="form-group">
-                                <label>Highlight</label>
-                                <input type="text" class="form-control" ng-model="searchQuery.highlight">
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-                            <div class="form-group">
-                                <label>Scoring Profile</label>
-                                <input type="text" class="form-control" ng-model="searchQuery.scoringProfile">
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-                            <div class="form-group">
-                                <label>Scoring Parameter</label>
-                                <input type="text" class="form-control" ng-model="searchQuery.scoringParameter">
+                                <label>Top</label>
+                                <input type="text" class="form-control" ng-model="suggestionsQuery.top">
                             </div>
                         </div>
                         <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
                             <div class="form-group">
                                 <label>Filter</label>
-                                <input type="text" class="form-control" ng-model="searchQuery.filter">
+                                <input type="text" class="form-control" ng-model="suggestionsQuery.filter">
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-lg-12">
-                            <input type="submit" value="Search" class="btn btn-primary pull-left">
+                            <input type="submit" value="Suggestions" class="btn btn-primary pull-left">
                             <div class="checkbox pull-left" style="margin-left: 10px">
                                 <label>
-                                    <input type="checkbox" ng-model="searchQuery.count"> Include count
+                                    <input type="checkbox" ng-model="suggestionsQuery.fuzzy"> Fuzzy
                                 </label>
                             </div>
                         </div>
@@ -90,17 +66,8 @@
 </div>
 
 <div class="row" ng-if="loading || results != null">
-    <div class="col-lg-2" ng-show="facets">
-        <div class="widget">
-            <div class="widget-title">
-                <i class="fa fa-check-square-o"></i> Facets
-            </div>
-            <div class="widget-body xlarge no-padding">
-                <pre>{{ facets | json }}</pre>
-            </div>
-        </div>
-    </div>
-    <div ng-class="{ 'col-lg-10': facets != null, 'col-lg-12': facets == null }">
+
+    <div ng-class="col-lg-12">
         <div class="widget">
             <div class="widget-title">
                 <i class="fa fa-bars"></i> Results <span>({{ count }} results)</span>

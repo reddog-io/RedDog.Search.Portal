@@ -31,6 +31,11 @@ angular.module('reddog.search').config(function ($routeProvider, viewBase) {
             controller: 'IndexSearchCtrl',
             templateUrl: viewBase + 'indexSearch.html'
         })
+        .when('/indexes/suggestions/:indexName', {
+            state: 'index.suggestions',
+            controller: 'IndexSuggestionsCtrl',
+            templateUrl: viewBase + 'indexSuggestions.html'
+         })
         .when('/indexes/import/:indexName', {
             state: 'index.import',
             controller: 'IndexImportCtrl',
@@ -86,6 +91,10 @@ angular.module('reddog.search').controller('IndexesCtrl', function ($scope, $loc
 
     $scope.searchIndex = function (index) {
         $location.path("/indexes/search/" + index.name);
+    }
+
+    $scope.suggestionsIndex = function (index) {
+        $location.path("/indexes/suggestions/" + index.name);
     }
 
     $scope.importIndex = function (index) {
@@ -167,7 +176,7 @@ angular.module('reddog.search').controller('IndexEditCtrl', function ($scope, $r
 
     // Create a new field.
     $scope.newField = function () {
-        $scope.index.fields.push({});
+        $scope.index.fields.push({ retrievable: true });
     };
 
     // Delete an existing field.
@@ -391,7 +400,35 @@ angular.module('reddog.search').controller('IndexSearchCtrl', function ($scope, 
         });
     };
 });
+/**
+ * Index suggestions.
+ */
+angular.module('reddog.search').controller('IndexSuggestionsCtrl', function ($scope, $route, $routeParams, $location, $q, indexService) {
+    $scope.suggestionsQuery = {
+        fuzzy: true
+    };
+    $scope.fields = [];
+    $scope.suggestions = function () {
+        $scope.loading = true;
+        $scope.error = null;
+        indexService.suggestions($routeParams.indexName, $scope.suggestionsQuery).then(function (data) {
+            $scope.results = data.value;
 
+            // Dynamically load the fields.
+            $scope.fields = [];
+            if ($scope.results.length > 0) {
+                angular.forEach($scope.results[0], function (idx, fieldName) {
+                    if (!angular.isObject($scope.results[0][fieldName]) || Object.keys($scope.results[0][fieldName]).length > 0)
+                        $scope.fields.push(fieldName);
+                });
+            }
+        }, function (data) {
+            $scope.error = angular.isDefined(data.error) ? data.error : data;
+        }).finally(function () {
+            $scope.loading = false;
+        });
+    };
+});
 /**
  * Index Service.
  */
@@ -505,6 +542,19 @@ angular.module('reddog.search').service('indexService', function ($http, $q) {
     this.search = function (indexName, query) {
         var d = $q.defer();
         $http.get('api/search/' + indexName, {
+            params: query
+        }).success(function (data) {
+            d.resolve(data.body);
+        }).error(function (data) {
+            d.reject(data);
+        });
+        return d.promise;
+    };
+
+    // Launch a suggestion query.
+    this.suggestions = function (indexName, query) {
+        var d = $q.defer();
+        $http.get('api/suggestions/' + indexName, {
             params: query
         }).success(function (data) {
             d.resolve(data.body);
