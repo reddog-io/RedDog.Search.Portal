@@ -3,6 +3,8 @@ RedDog.Search.Portal
 
 Sample management portal for Microsoft Azure Search which allows you to manage your indexes, import data and execute queries. Built with RedDog.Search, Autofac, AngularJS, ASP.NET Web API.
 
+The RedDog Search Portal is also available as a [Site Extension](http://fabriccontroller.net/blog/posts/new-site-extension-available-for-azure-web-sites-search-portal-for-azure-search/) for Azure Web SItes
+
 ## Getting Started
 
 ### Configuring the portal:
