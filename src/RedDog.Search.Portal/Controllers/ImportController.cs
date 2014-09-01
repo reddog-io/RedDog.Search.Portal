@@ -44,6 +44,9 @@ namespace RedDog.Search.Portal.Controllers
 
             // Read all files.
             var root = System.Web.HttpContext.Current.Server.MapPath("~/App_Data/imports");
+            if (!Directory.Exists(root))
+                Directory.CreateDirectory(root);
+
             var provider = new MultipartFormDataStreamProvider(root);
             await request.Content.ReadAsMultipartAsync(provider);
 

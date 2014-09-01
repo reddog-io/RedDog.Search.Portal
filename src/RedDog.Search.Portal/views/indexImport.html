@@ -3,6 +3,11 @@
         <pre class="alert alert-danger">{{ error | json }}</pre>
     </div>
 </div>
+<div class="row" ng-if="message">
+    <div class="col-xs-12">
+        <pre class="alert alert-info">{{ message | json }}</pre>
+    </div>
+</div>
 <div class="row">
     <div class="col-lg-12">
         <div class="widget">

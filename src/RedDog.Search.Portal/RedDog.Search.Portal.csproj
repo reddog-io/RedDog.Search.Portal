@@ -98,6 +98,7 @@
     <Compile Include="Controllers\SuggestionsController.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Filters\RequireConfigurationFilter.cs" />
     <Compile Include="Models\ExtendedSuggestionQueryModel.cs" />
     <Compile Include="Controllers\ImportController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
@@ -141,6 +142,7 @@
     <Content Include="js\jquery-1.9.1.js" />
     <Content Include="js\jquery-1.9.1.min.js" />
     <Content Include="views\functionEdit.html" />
+    <Content Include="views\error.html" />
     <Content Include="views\indexSuggestions.html" />
     <Content Include="views\scoringProfileEdit.html" />
     <Content Include="views\indexImport.html" />
@@ -157,7 +159,6 @@
       <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="js\jquery-1.9.1.min.map" />
-    <None Include="Properties\PublishProfiles\reddogsearchtest.pubxml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\fontawesome-webfont.eot" />

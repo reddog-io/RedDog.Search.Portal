@@ -41,7 +41,36 @@ angular.module('reddog.search').config(function ($routeProvider, viewBase) {
             controller: 'IndexImportCtrl',
             templateUrl: viewBase + 'indexImport.html'
         })
+        .when('/error', {
+            state: 'error',
+            controller: 'ErrorCtrl',
+            templateUrl: viewBase + 'error.html'
+        })
         .otherwise({ redirectTo: '/indexes' });
+});
+
+/*
+ * Redirect when configuration is missing.
+ */
+angular.module('reddog.search').config(['$httpProvider', function ($httpProvider) {
+    $httpProvider.interceptors.push(function ($q, $location, $rootScope) {
+        return {
+            'responseError': function (rejection) {
+                if (rejection != null && rejection.status == 500) {
+                    $rootScope.lastErrorMessage = rejection.data.exceptionMessage;
+                    $location.url('/error');
+                }
+                return $q.reject(rejection);
+            }
+        };
+    });
+}]);
+
+/**
+ * Error controller.
+ */
+angular.module('reddog.search').controller('ErrorCtrl', function ($rootScope, $scope) {
+    $scope.lastErrorMessage = $rootScope.lastErrorMessage;
 });
 
 /**
@@ -342,15 +371,19 @@ angular.module('reddog.search').controller('FunctionEditCtrl', function ($scope,
  */
 angular.module('reddog.search').controller('IndexImportCtrl', function ($scope, $routeParams, $upload) {
     $scope.onFileSelect = function ($files) {
-        //$files: an array of files selected, each file has name, size, and type.
+        $scope.message = null;
+        $scope.error = null;
+
         for (var i = 0; i < $files.length; i++) {
             var file = $files[i];
             $scope.upload = $upload.upload({
-                url: '/api/import/' + $routeParams.indexName,
+                url: 'api/import/' + $routeParams.indexName,
                 method: 'PUT',
                 file: file
-            }).success(function (data, status, headers, config) {
-
+            }).success(function () {
+                $scope.message = "The CSV file has been imported. You can now start searching through your data.";
+            }).error(function(data) {
+                $scope.error = data;
             });
         }
     };
