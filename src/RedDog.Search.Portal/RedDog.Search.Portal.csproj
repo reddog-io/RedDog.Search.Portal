@@ -142,7 +142,6 @@
     <Content Include="js\jquery-1.9.1.js" />
     <Content Include="js\jquery-1.9.1.min.js" />
     <Content Include="views\functionEdit.html" />
-    <Content Include="views\error.html" />
     <Content Include="views\indexSuggestions.html" />
     <Content Include="views\scoringProfileEdit.html" />
     <Content Include="views\indexImport.html" />

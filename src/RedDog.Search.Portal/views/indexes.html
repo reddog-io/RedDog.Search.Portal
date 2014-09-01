@@ -1,5 +1,6 @@
 ﻿<div class="row" ng-if="error">
     <div class="col-xs-12">
+        <div class="alert alert-warning">Make sure you add the credentials of your search service to your configuration. The keys <strong>Azure.Search.ServiceName</strong> and <strong>Azure.Search.ApiKey</strong> should be added to the AppSettings in your Web.config or to the Configuration tab of your Azure Web Site.</div>
         <pre class="alert alert-danger">{{ error | json }}</pre>
     </div>
 </div>

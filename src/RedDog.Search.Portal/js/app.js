@@ -49,23 +49,6 @@ angular.module('reddog.search').config(function ($routeProvider, viewBase) {
         .otherwise({ redirectTo: '/indexes' });
 });
 
-/*
- * Redirect when configuration is missing.
- */
-angular.module('reddog.search').config(['$httpProvider', function ($httpProvider) {
-    $httpProvider.interceptors.push(function ($q, $location, $rootScope) {
-        return {
-            'responseError': function (rejection) {
-                if (rejection != null && rejection.status == 500) {
-                    $rootScope.lastErrorMessage = rejection.data.exceptionMessage;
-                    $location.url('/error');
-                }
-                return $q.reject(rejection);
-            }
-        };
-    });
-}]);
-
 /**
  * Error controller.
  */
@@ -96,6 +79,7 @@ angular.module('reddog.search').controller('IndexesCtrl', function ($scope, $loc
     var self = this;
     self.loadIndexes = function () {
         $scope.loading = true;
+        $scope.error = null;
 
         // Load from the service.
         indexService.getIndexes()
@@ -108,6 +92,8 @@ angular.module('reddog.search').controller('IndexesCtrl', function ($scope, $loc
                         index.stats = stats;
                     });
                 });
+            }, function(err) {
+                $scope.error = err;
             })
             .finally(function () {
                 $scope.loading = false;
