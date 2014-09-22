@@ -93,19 +93,19 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat="field in index.fields">
-                                <td><input type="text" ng-model="field.name" class="form-control" /></td>
+                                <td><input ng-disabled="field.isReadOnly" ng-model="field.name" type="text"  class="form-control" /></td>
                                 <td>
-                                    <select ng-model="field.type" class="form-control" ng-options="fieldType.name as fieldType.name for fieldType in fieldTypes"></select>
+                                    <select ng-disabled="field.isReadOnly" ng-model="field.type" ng-options="fieldType.name as fieldType.name for fieldType in fieldTypes" class="form-control" ></select>
                                 </td>
-                                <td><input type="checkbox" name="key" ng-model="field.key" ng-change="fieldKeySelected(field)" /></td>
-                                <td><input type="checkbox" ng-model="field.searchable" /></td>
-                                <td><input type="checkbox" ng-model="field.retrievable" /></td>
-                                <td><input type="checkbox" ng-model="field.sortable" /></td>
-                                <td><input type="checkbox" ng-model="field.facetable" /></td>
-                                <td><input type="checkbox" ng-model="field.filterable" /></td>
-                                <td><input type="checkbox" ng-model="field.suggestions" /></td>
+                                <td><input ng-disabled="field.isReadOnly" ng-model="field.key" ng-change="fieldKeySelected(field)" name="key" type="checkbox"/></td>
+                                <td><input ng-disabled="field.isReadOnly" ng-model="field.searchable" type="checkbox" /></td>
+                                <td><input ng-disabled="field.isReadOnly" ng-model="field.retrievable" type="checkbox" /></td>
+                                <td><input ng-disabled="field.isReadOnly" ng-model="field.sortable" type="checkbox" /></td>
+                                <td><input ng-disabled="field.isReadOnly" ng-model="field.facetable" type="checkbox" /></td>
+                                <td><input ng-disabled="field.isReadOnly" ng-model="field.filterable" type="checkbox" /></td>
+                                <td><input ng-disabled="field.isReadOnly" ng-model="field.suggestions" type="checkbox" /></td>
                                 <td>
-                                    <button class="btn btn-xs btn-danger" ng-click="deleteField(field);">
+                                    <button ng-show="!field.isReadOnly" class="btn btn-xs btn-danger" ng-click="deleteField(field);">
                                         <i class="fa fa-trash-o"></i> Delete
                                     </button>
                                 </td>

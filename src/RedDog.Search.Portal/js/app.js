@@ -46,6 +46,11 @@ angular.module('reddog.search').config(function ($routeProvider, viewBase) {
             controller: 'ErrorCtrl',
             templateUrl: viewBase + 'error.html'
         })
+        .when('/indexes/lookup/:indexName', {
+            state: 'index.lookup',
+            controller: 'IndexLookupCtrl',
+            templateUrl: viewBase + 'indexLookup.html'
+        })
         .otherwise({ redirectTo: '/indexes' });
 });
 
@@ -116,6 +121,10 @@ angular.module('reddog.search').controller('IndexesCtrl', function ($scope, $loc
         $location.path("/indexes/import/" + index.name);
     }
 
+    $scope.lookupIndex = function (index) {
+        $location.path("/indexes/lookup/" + index.name);
+    }
+
     $scope.deleteIndex = function (index) {
         var modalOptions = {
             closeButtonText: 'Cancel',
@@ -181,6 +190,11 @@ angular.module('reddog.search').controller('IndexEditCtrl', function ($scope, $r
         $scope.isNew = false;
         indexService.getIndex(currentIndexName)
             .then(function (index) {
+                // Set all the fields readonly
+                angular.forEach(index.fields, function (field) {
+                    field.isReadOnly = true;
+                });
+
                 $scope.index = index;
             });
     }
@@ -191,7 +205,7 @@ angular.module('reddog.search').controller('IndexEditCtrl', function ($scope, $r
 
     // Create a new field.
     $scope.newField = function () {
-        $scope.index.fields.push({ retrievable: true });
+        $scope.index.fields.push({ retrievable: true, isReadOnly: false });
     };
 
     // Delete an existing field.
@@ -238,7 +252,12 @@ angular.module('reddog.search').controller('IndexEditCtrl', function ($scope, $r
         if ($scope.isNew) {
             $scope.loadingMessage = "Creating index '" + $scope.index.name + "'...";
             $scope.loadingPromise = indexService.createIndex($scope.index)
-                .then(function() {
+                .then(function () {
+                    // Set all the fields readonly
+                    angular.forEach($scope.index.fields, function (field) {
+                        field.isReadOnly = true;
+                    });
+
                     $location.path("/indexes");
                 }, function(data) {
                     $scope.error = data.error;
@@ -312,7 +331,7 @@ angular.module('reddog.search').controller('ScoringProfileEditCtrl', function ($
         var editFunc = angular.copy(func);
 
         // Show the edit dialog.
-        createDialog('/views/functionEdit.html', {
+        createDialog('views/functionEdit.html', {
             id: 'simpleDialog', title: 'Edit Function', controller: 'FunctionEditCtrl', backdrop: true,
             success: { label: 'OK', fn: function() {
                 var position = $scope.scoringProfile.functions.indexOf(func);
@@ -442,7 +461,39 @@ angular.module('reddog.search').controller('IndexSuggestionsCtrl', function ($sc
                 });
             }
         }, function (data) {
+            // Clear the results on error.
+            $scope.results = null;
             $scope.error = angular.isDefined(data.error) ? data.error : data;
+        }).finally(function () {
+            $scope.loading = false;
+        });
+    };
+});
+/**
+ * Index Lookup.
+ */
+angular.module('reddog.search').controller('IndexLookupCtrl', function ($scope, $route, $routeParams, $location, $q, indexService) {
+    $scope.lookupQuery = {};
+    $scope.fields = [];
+    $scope.lookup = function () {
+        $scope.loading = true;
+        $scope.error = null;
+        $scope.result = null;
+        indexService.lookup($routeParams.indexName, $scope.lookupQuery).then(function (data) {
+            $scope.result = data;
+
+            // Dynamically load the fields.
+            $scope.fields = [];
+
+            angular.forEach($scope.result, function (idx, fieldName) {
+                if (!angular.isObject($scope.result[fieldName]) || Object.keys($scope.result[fieldName]).length > 0)
+                    $scope.fields.push(fieldName);
+            });
+        }, function (data) {
+            $scope.result = null;
+            if (angular.isDefined(data)) {
+                $scope.error = data;
+            }
         }).finally(function () {
             $scope.loading = false;
         });
@@ -582,6 +633,19 @@ angular.module('reddog.search').service('indexService', function ($http, $q) {
         });
         return d.promise;
     };
+    
+    // Launch a lookup query.
+    this.lookup = function (indexName, query) {
+        var d = $q.defer();
+        $http.get('api/lookup/' + indexName, {
+            params: query
+        }).success(function (data) {
+            d.resolve(data.body);
+        }).error(function (data) {
+            d.reject(data);
+        });
+        return d.promise;
+    };
 });
 
 angular.module('reddog.search').service('modalService', function ($modal) {
@@ -589,7 +653,7 @@ angular.module('reddog.search').service('modalService', function ($modal) {
         backdrop: true,
         keyboard: true,
         modalFade: true,
-        templateUrl: '/partials/modal.html'
+        templateUrl: 'partials/modal.html'
     };
 
     var modalOptions = {

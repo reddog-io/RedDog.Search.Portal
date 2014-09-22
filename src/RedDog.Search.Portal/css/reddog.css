@@ -17,6 +17,10 @@ ul.sidebar .sidebar-list a.active {
     overflow-y: auto;
 }
 
+.widget .widget-body.large {
+    height: auto;
+}
+
 .form-group {
     margin-bottom: 0;
 }

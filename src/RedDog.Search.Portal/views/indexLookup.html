@@ -1,0 +1,70 @@
+﻿<div class="row" ng-if="error">
+    <div class="col-xs-12">
+        <pre class="alert alert-danger">{{ error | json }}</pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="widget">
+            <div class="widget-title">
+                <i class="fa fa-th"></i> Lookup
+            </div>
+            <div class="widget-body xlarge">
+                <form role="form" ng-submit="lookup()">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                            <div class="form-group">
+                                <label>Key</label>
+                                <input type="text" class="form-control" ng-model="lookupQuery.key">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                            <div class="form-group">
+                                <label>Select</label>
+                                <input type="text" class="form-control" ng-model="lookupQuery.select">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <input type="submit" value="Lookup" class="btn btn-primary pull-left">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-if="loading || result != null">
+    <div ng-class="col-lg-12">
+        <div class="widget">
+            <div class="widget-title">
+                <i class="fa fa-bars"></i> Result <span>(result)</span>
+            </div>
+            <div class="widget-body xlarge no-padding">
+                <div class="message" ng-if="!loading && (result == null)">
+                    <div class="alert alert-warning">The query did not return any results.</div>
+                </div>
+                <div class="table-responsive" ng-if="!loading && result != null">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th ng-repeat="field in fields">
+                                    {{ field }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td ng-repeat="field in fields">
+                                    {{ result[field] }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -45,6 +45,9 @@
                 <li class="sidebar-list" ng-if="currentParams.indexName">
                     <a href="#/indexes/suggestions/{{ currentParams.indexName }}" ng-class="{ 'active': currentAction == 'index.suggestions' }">Suggestions<span class="menu-icon fa fa-th"></span></a>
                 </li>
+                <li class="sidebar-list" ng-if="currentParams.indexName">
+                    <a href="#/indexes/lookup/{{ currentParams.indexName }}" ng-class="{ 'active': currentAction == 'index.lookup' }">Lookup<span class="menu-icon fa fa-eye"></span></a>
+                </li>
             </ul>
             <div class="sidebar-footer">
                 <div class="col-xs-12">
