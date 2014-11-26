@@ -88,6 +88,7 @@
                                 <th>Facetable</th>
                                 <th>Filterable</th>
                                 <th>Suggestions</th>
+                                <th>Analyzer</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -105,7 +106,10 @@
                                 <td><input ng-disabled="field.isReadOnly" ng-model="field.filterable" type="checkbox" /></td>
                                 <td><input ng-disabled="field.isReadOnly" ng-model="field.suggestions" type="checkbox" /></td>
                                 <td>
-                                    <button ng-show="!field.isReadOnly" class="btn btn-xs btn-danger" ng-click="deleteField(field);">
+                                    <select ng-disabled="field.isReadOnly" ng-model="field.analyzer" ng-options="an.name as an.name for an in analyzers" class="form-control"></select>
+                                </td>
+                                <td>
+                                    <button ng-disabled="field.isReadOnly"  class="btn btn-xs btn-danger" ng-click="deleteField(field);">
                                         <i class="fa fa-trash-o"></i> Delete
                                     </button>
                                 </td>

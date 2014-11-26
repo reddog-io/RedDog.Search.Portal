@@ -177,6 +177,36 @@ angular.module('reddog.search').controller('IndexEditCtrl', function ($scope, $r
         { name: "quadratic" },
         { name: "logarithmic" }
     ];
+    $scope.analyzers = [
+        { name: "ar.lucene" },
+        { name: "pt-Br.lucene" },
+        { name: "zh-Hans.lucene" },
+        { name: "zh-Hant.lucene" },
+        { name: "cs.lucene" },
+        { name: "da.lucene" },
+        { name: "nl.lucene" },
+        { name: "de.lucene" },
+        { name: "el.lucene" },
+        { name: "en.lucene" },
+        { name: "fi.lucene" },
+        { name: "fr.lucene" },
+        { name: "hi.lucene" },
+        { name: "hu.lucene" },
+        { name: "id.lucene" },
+        { name: "it.lucene" },
+        { name: "ja.lucene" },
+        { name: "ko.lucene" },
+        { name: "lv.lucene" },
+        { name: "no.lucene" },
+        { name: "pl.lucene" },
+        { name: "pt-Pt.lucene" },
+        { name: "ro.lucene" },
+        { name: "ru.lucene" },
+        { name: "es.lucene" },
+        { name: "sv.lucene" },
+        { name: "tr.lucene" },
+        { name: "th.lucene" }
+    ];
 
     // Get the current index name.
     var currentIndexName = $routeParams.indexName;
@@ -210,7 +240,11 @@ angular.module('reddog.search').controller('IndexEditCtrl', function ($scope, $r
 
     // Delete an existing field.
     $scope.deleteField = function (field) {
-        $scope.index.fields.splice($scope.index.fields.indexOf(field), 1);
+        if (field.isReadOnly) {
+            $scope.index.fields[$scope.index.fields.indexOf(field)] = null;
+        } else {
+            $scope.index.fields.splice($scope.index.fields.indexOf(field), 1);
+        }
     };
 
     // Only allow 1 key field to be selected.
@@ -400,7 +434,8 @@ angular.module('reddog.search').controller('IndexImportCtrl', function ($scope, 
 angular.module('reddog.search').controller('IndexSearchCtrl', function ($scope, $route, $routeParams, $location, $q, indexService) {
     $scope.searchQuery = {
         mode: 'any',
-        count: true
+        count: true,
+        top: 20
     };
     $scope.fields = [ ];
     $scope.modes  = [
@@ -532,8 +567,13 @@ angular.module('reddog.search').service('indexService', function ($http, $q) {
                         obj[sp.text.weights[i].key] = sp.text.weights[i].value;
                     sp.text.weights = obj;
                 }
+                
+                if (sp != null && sp.text != null && sp.text.weights != null && sp.text.weights.length == 0) {
+                    sp.text = null;
+                }
             });
         }
+
         return idx;
     };
 
@@ -610,9 +650,21 @@ angular.module('reddog.search').service('indexService', function ($http, $q) {
 
     // Launch a search query.
     this.search = function (indexName, query) {
+        var queryCopy = angular.copy(query);
+        if (queryCopy.facet) {
+            if (queryCopy.facet.indexOf(' ') >= 0) {
+                queryCopy.facets = queryCopy.facet.split(' ');
+            } else {
+                var facets = [];
+                facets.push(queryCopy.facet);
+                queryCopy.facets = facets;
+            }
+            delete queryCopy.facet;
+        }
+
         var d = $q.defer();
         $http.get('api/search/' + indexName, {
-            params: query
+            params: queryCopy
         }).success(function (data) {
             d.resolve(data.body);
         }).error(function (data) {

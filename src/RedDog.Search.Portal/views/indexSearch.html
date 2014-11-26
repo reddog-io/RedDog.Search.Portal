@@ -44,7 +44,7 @@
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
                             <div class="form-group">
-                                <label>Facet</label>
+                                <label>Facet <small style="font-weight: 100">field1,count:20 field2,count:5</small></label>
                                 <input type="text" class="form-control" ng-model="searchQuery.facet">
                             </div>
                         </div>
@@ -70,6 +70,12 @@
                             <div class="form-group">
                                 <label>Filter</label>
                                 <input type="text" class="form-control" ng-model="searchQuery.filter">
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                            <div class="form-group">
+                                <label>Top</label>
+                                <input type="text" class="form-control" ng-model="searchQuery.top">
                             </div>
                         </div>
                     </div>
