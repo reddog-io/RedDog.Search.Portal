@@ -553,6 +553,9 @@ angular.module('reddog.search').service('indexService', function ($http, $q) {
                 }
             });
         }
+        if (index.corsOptions && index.corsOptions.allowedOrigins) {
+            index.corsOptions.allowedOrigins = index.corsOptions.allowedOrigins.join();
+        }
         return index;
     };
 
@@ -572,6 +575,16 @@ angular.module('reddog.search').service('indexService', function ($http, $q) {
                     sp.text = null;
                 }
             });
+        }
+
+        if (idx.corsOptions && idx.corsOptions.allowedOrigins) {
+            if (idx.corsOptions.allowedOrigins.indexOf(',') >= 0) {
+                idx.corsOptions.allowedOrigins = idx.corsOptions.allowedOrigins.split(',');
+            } else {
+                var origins = [];
+                origins.push(idx.corsOptions.allowedOrigins);
+                idx.corsOptions.allowedOrigins = origins;
+            }
         }
 
         return idx;
