@@ -70,8 +70,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="RedDog.Search">
-      <HintPath>..\packages\RedDog.Search.0.5.2.0\lib\net45\RedDog.Search.dll</HintPath>
+    <Reference Include="RedDog.Search, Version=0.5.7.3, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\RedDog.Search.0.5.7.3\lib\net45\RedDog.Search.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -158,6 +159,7 @@
     <Content Include="views\functionEdit.html" />
     <Content Include="views\indexLookup.html" />
     <Content Include="views\indexSuggestions.html" />
+    <Content Include="views\suggesterEdit.html" />
     <Content Include="views\scoringProfileEdit.html" />
     <Content Include="views\indexImport.html" />
     <Content Include="views\indexSearch.html" />

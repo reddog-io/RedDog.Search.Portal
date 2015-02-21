@@ -1,0 +1,33 @@
+﻿<div class="row">
+    <div class="col-xs-12">
+        <a class="btn btn-warning" href="#/indexes/edit/{{ index.name }}">Return to '{{ index.name }}'</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-6">
+        <div class="widget">
+            <div class="widget-title">
+                <i class="fa fa-signal"></i> Suggester
+            </div>
+            <div class="widget-body large">
+                <form role="form">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" class="form-control" ng-model="suggester.name">
+                    </div>
+                    <div class="form-group">
+                        <label>Search Mode</label>
+                        <select ng-model="suggester.searchMode" class="form-control" ng-options="f.name as f.name for f in searchModeTypes"></select>                        
+                    </div>
+                    <div class="form-group">
+                        <label>SourceFields</label>
+                        <input type="text" class="form-control" ng-model="suggester.sourceField">
+                        <p class="help-block">Required, comma separated list of fields.</p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+   
+</div>

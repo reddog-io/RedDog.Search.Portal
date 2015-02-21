@@ -14,7 +14,8 @@ namespace RedDog.Search.Portal.Models.Mappers
                        OrderBy = extendedSuggestionQuery.OrderBy,
                        SearchFields = extendedSuggestionQuery.SearchFields,
                        Select = extendedSuggestionQuery.Select,
-                       Top = extendedSuggestionQuery.Top
+                       Top = extendedSuggestionQuery.Top,
+                       SuggesterName = extendedSuggestionQuery.SuggesterName
                    };
         }
     }

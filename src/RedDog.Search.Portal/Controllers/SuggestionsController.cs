@@ -23,12 +23,7 @@ namespace RedDog.Search.Portal.Controllers
         /// <returns>Search an index.</returns>
         [Route("{indexName}")]
         public async Task<HttpResponseMessage> Get(string indexName, [FromUri]ExtendedSuggestionQueryModel suggestionQuery)
-        {
-            if (suggestionQuery == null || string.IsNullOrWhiteSpace(suggestionQuery.Search) || suggestionQuery.Search.Length < 3)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "The search value should have at least 3 characters.");
-            }
-            
+        {            
             var result = await _searchClient.SuggestAsync(indexName, suggestionQuery.MapToSuggestionQuery());
 
             if (!result.IsSuccess)

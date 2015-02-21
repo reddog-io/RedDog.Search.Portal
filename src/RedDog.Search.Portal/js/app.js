@@ -26,6 +26,11 @@ angular.module('reddog.search').config(function ($routeProvider, viewBase) {
             controller: 'ScoringProfileEditCtrl',
             templateUrl: viewBase + 'scoringProfileEdit.html'
         })
+        .when('/indexes/edit/:indexName/suggester', {
+            state: 'index.edit',
+            controller: 'SuggesterEditCtrl',
+            templateUrl: viewBase + 'suggesterEdit.html'
+        })
         .when('/indexes/search/:indexName', {
             state: 'index.search',
             controller: 'IndexSearchCtrl',
@@ -35,7 +40,7 @@ angular.module('reddog.search').config(function ($routeProvider, viewBase) {
             state: 'index.suggestions',
             controller: 'IndexSuggestionsCtrl',
             templateUrl: viewBase + 'indexSuggestions.html'
-         })
+        })
         .when('/indexes/import/:indexName', {
             state: 'index.import',
             controller: 'IndexImportCtrl',
@@ -97,7 +102,7 @@ angular.module('reddog.search').controller('IndexesCtrl', function ($scope, $loc
                         index.stats = stats;
                     });
                 });
-            }, function(err) {
+            }, function (err) {
                 $scope.error = err;
             })
             .finally(function () {
@@ -161,6 +166,7 @@ angular.module('reddog.search').controller('IndexEditCtrl', function ($scope, $r
         { name: "Edm.String" },
         { name: "Collection(Edm.String)", },
         { name: "Edm.Int32" },
+        { name: "Edm.Int64" },
         { name: "Edm.Double" },
         { name: "Edm.Boolean" },
         { name: "Edm.DateTimeOffset" },
@@ -169,7 +175,8 @@ angular.module('reddog.search').controller('IndexEditCtrl', function ($scope, $r
     $scope.scoringProfileType = [
         { name: "magnitude" },
         { name: "freshness", },
-        { name: "distance" }
+        { name: "distance" },
+        { name: "tag" }
     ];
     $scope.scoringProfileInterpolations = [
         { name: "constant" },
@@ -205,7 +212,8 @@ angular.module('reddog.search').controller('IndexEditCtrl', function ($scope, $r
         { name: "es.lucene" },
         { name: "sv.lucene" },
         { name: "tr.lucene" },
-        { name: "th.lucene" }
+        { name: "th.lucene" },
+        { name: "standardasciifolding.lucene" }
     ];
 
     // Get the current index name.
@@ -230,7 +238,7 @@ angular.module('reddog.search').controller('IndexEditCtrl', function ($scope, $r
     }
     else {
         $scope.isNew = true;
-        $scope.index = { fields: [], scoringProfiles: [] };
+        $scope.index = { fields: [], scoringProfiles: [], suggesters: [] };
     }
 
     // Create a new field.
@@ -260,11 +268,22 @@ angular.module('reddog.search').controller('IndexEditCtrl', function ($scope, $r
         var sp = {
             name: 'My scoring profile',
             text: {
-                 weights: []
+                weights: []
             }
         };
         $scope.index.scoringProfiles.push(sp);
         $scope.editScoringProfile(sp);
+    };
+
+    // Create a new suggester.
+    $scope.newSuggester = function () {
+        var suggester = {
+            name: '',
+            searchMode: 'analyzingInfixMatching',
+            sourceField: ''
+        };
+        $scope.index.suggesters.push(suggester);
+        $scope.editSuggester(suggester);
     };
 
     // Edit an existing scoringProfile.
@@ -272,9 +291,17 @@ angular.module('reddog.search').controller('IndexEditCtrl', function ($scope, $r
         // Quick hack to pass around the scoring profile.
         $rootScope.currentIndex = $scope.index;
         $rootScope.currentScoringProfile = scoringProfile;
-
         // Open the edit page.
         $location.path("/indexes/edit/" + $scope.index.name + '/scoringProfile');
+    };
+
+    // Edit an existing suggester.
+    $scope.editSuggester = function (suggester) {
+        // Quick hack to pass around the scoring profile.
+        $rootScope.currentIndex = $scope.index;
+        $rootScope.currentSuggester = suggester;
+        // Open the edit page.
+        $location.path("/indexes/edit/" + $scope.index.name + '/suggester');
     };
 
     // Delete an existing scoringProfile.
@@ -293,7 +320,7 @@ angular.module('reddog.search').controller('IndexEditCtrl', function ($scope, $r
                     });
 
                     $location.path("/indexes");
-                }, function(data) {
+                }, function (data) {
                     $scope.error = data.error;
                 });
         } else {
@@ -342,7 +369,7 @@ angular.module('reddog.search').controller('ScoringProfileEditCtrl', function ($
 
     // Manage weights.
     $scope.addWeight = function () {
-        $scope.scoringProfile.text.weights.push({ });
+        $scope.scoringProfile.text.weights.push({});
     };
     $scope.deleteWeight = function (weight) {
         $scope.scoringProfile.text.weights.splice($scope.scoringProfile.text.weights.indexOf(weight), 1);
@@ -367,15 +394,17 @@ angular.module('reddog.search').controller('ScoringProfileEditCtrl', function ($
         // Show the edit dialog.
         createDialog('views/functionEdit.html', {
             id: 'simpleDialog', title: 'Edit Function', controller: 'FunctionEditCtrl', backdrop: true,
-            success: { label: 'OK', fn: function() {
-                var position = $scope.scoringProfile.functions.indexOf(func);
+            success: {
+                label: 'OK', fn: function () {
+                    var position = $scope.scoringProfile.functions.indexOf(func);
 
-                // Remove the original function
-                $scope.deleteFunction(func);
+                    // Remove the original function
+                    $scope.deleteFunction(func);
 
-                // Insert updated function.
-                $scope.scoringProfile.functions.splice(position, 0, editFunc);
-            } }
+                    // Insert updated function.
+                    $scope.scoringProfile.functions.splice(position, 0, editFunc);
+                }
+            }
         }, { func: editFunc, index: $scope.index });
     };
 
@@ -387,6 +416,30 @@ angular.module('reddog.search').controller('ScoringProfileEditCtrl', function ($
 
 
 /**
+ * Suggester edit.
+ */
+angular.module('reddog.search').controller('SuggesterEditCtrl', function ($scope, $rootScope, $route, $routeParams, $location, createDialog) {
+    $scope.index = $rootScope.currentIndex;
+    $scope.suggester = $rootScope.currentSuggester;
+
+    // Redirect to index or homepage if we don't have the current objects.
+    if ($scope.index == null || $scope.suggester == null) {
+        if (angular.isDefined($routeParams.indexName)) {
+            $location.path("/indexes/edit/" + $routeParams.indexName);
+            return;
+        } else {
+            $location.path('/indexes');
+            return;
+        }
+    }
+
+    // Combo.
+    $scope.searchModeTypes = [
+        { name: 'analyzingInfixMatching' }
+    ];
+});
+
+/**
  * Function edit.
  */
 angular.module('reddog.search').controller('FunctionEditCtrl', function ($scope, $rootScope, index, func) {
@@ -395,7 +448,8 @@ angular.module('reddog.search').controller('FunctionEditCtrl', function ($scope,
     $scope.functionTypes = [
         { name: "magnitude" },
         { name: "freshness", },
-        { name: "distance" }
+        { name: "distance" },
+        { name: "tag" }
     ];
     $scope.interpolationTypes = [
         { name: "constant" },
@@ -421,7 +475,7 @@ angular.module('reddog.search').controller('IndexImportCtrl', function ($scope, 
                 file: file
             }).success(function () {
                 $scope.message = "The CSV file has been imported. You can now start searching through your data.";
-            }).error(function(data) {
+            }).error(function (data) {
                 $scope.error = data;
             });
         }
@@ -437,8 +491,8 @@ angular.module('reddog.search').controller('IndexSearchCtrl', function ($scope, 
         count: true,
         top: 20
     };
-    $scope.fields = [ ];
-    $scope.modes  = [
+    $scope.fields = [];
+    $scope.modes = [
         { name: "any" },
         { name: "all" }
     ];
@@ -468,7 +522,7 @@ angular.module('reddog.search').controller('IndexSearchCtrl', function ($scope, 
             }
         }, function (data) {
             $scope.error = angular.isDefined(data.error) ? data.error : data;
-        }).finally(function() {
+        }).finally(function () {
             $scope.loading = false;
         });
     };
@@ -481,8 +535,21 @@ angular.module('reddog.search').controller('IndexSuggestionsCtrl', function ($sc
         fuzzy: true
     };
     $scope.fields = [];
+    $scope.live = false;
+
+    $scope.liveSuggestions = function () {
+        if ($scope.live && $scope.suggestionsQuery.search) {
+            if ($scope.suggestionsQuery.search.length > 0) {
+                $scope.suggestions();
+            } else {
+                // Clear the results when ther is not search input.
+                $scope.results = null;
+            }            
+        }
+    }
+
     $scope.suggestions = function () {
-        $scope.loading = true;
+        $scope.loading = $scope.live ? false : true;
         $scope.error = null;
         indexService.suggestions($routeParams.indexName, $scope.suggestionsQuery).then(function (data) {
             $scope.results = data.value;
@@ -553,6 +620,15 @@ angular.module('reddog.search').service('indexService', function ($http, $q) {
                 }
             });
         }
+
+        if (index.suggesters != null && index.suggesters.length > 0) {
+            angular.forEach(index.suggesters, function (suggester) {
+                if (suggester && suggester.sourceFields) {
+                    suggester.sourceField = suggester.sourceFields.join();
+                }
+            });
+        }        
+
         if (index.corsOptions && index.corsOptions.allowedOrigins) {
             index.corsOptions.allowedOrigins = index.corsOptions.allowedOrigins.join();
         }
@@ -570,9 +646,26 @@ angular.module('reddog.search').service('indexService', function ($http, $q) {
                         obj[sp.text.weights[i].key] = sp.text.weights[i].value;
                     sp.text.weights = obj;
                 }
-                
+
                 if (sp != null && sp.text != null && sp.text.weights != null && sp.text.weights.length == 0) {
                     sp.text = null;
+                }
+            });
+        }
+
+        if (idx.suggesters != null && idx.suggesters.length > 0) {
+            angular.forEach(idx.suggesters, function (suggester) {
+
+                if (suggester && suggester.sourceField) {
+                    if (suggester.sourceField.indexOf(',') >= 0) {
+                        suggester.sourceFields = suggester.sourceField.split(',');
+                    } else {
+                        var sourceFields = [];
+                        sourceFields.push(suggester.sourceField);
+                        suggester.sourceFields = sourceFields;
+
+                        delete suggester.sourceField;
+                    }
                 }
             });
         }
@@ -594,7 +687,7 @@ angular.module('reddog.search').service('indexService', function ($http, $q) {
     this.getIndexes = function () {
         var d = $q.defer();
         $http.get('api/indexes/', { cache: false }).success(function (data) {
-            angular.forEach(data.body, function(index) {
+            angular.forEach(data.body, function (index) {
                 self.parseIndexForRead(index);
             });
 
@@ -675,6 +768,17 @@ angular.module('reddog.search').service('indexService', function ($http, $q) {
             delete queryCopy.facet;
         }
 
+        if (queryCopy.scoringParameter) {
+            if (queryCopy.scoringParameter.indexOf(' ') >= 0) {
+                queryCopy.scoringParameters = queryCopy.scoringParameter.split(' ');
+            } else {
+                var scoringParameters = [];
+                scoringParameters.push(queryCopy.scoringParameter);
+                queryCopy.scoringParameters = scoringParameters;
+            }
+            delete queryCopy.scoringParameter;
+        }
+
         var d = $q.defer();
         $http.get('api/search/' + indexName, {
             params: queryCopy
@@ -698,7 +802,7 @@ angular.module('reddog.search').service('indexService', function ($http, $q) {
         });
         return d.promise;
     };
-    
+
     // Launch a lookup query.
     this.lookup = function (indexName, query) {
         var d = $q.defer();

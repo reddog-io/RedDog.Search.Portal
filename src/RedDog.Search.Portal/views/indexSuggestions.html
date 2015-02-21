@@ -4,7 +4,7 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-lg-12">
+     <div class="col-xs-12">
         <div class="widget">
             <div class="widget-title">
                 <i class="fa fa-th"></i> Suggestions
@@ -15,7 +15,7 @@
                         <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
                             <div class="form-group">
                                 <label>Search</label>
-                                <input type="text" class="form-control" ng-model="suggestionsQuery.search">
+                                <input type="text" class="form-control" ng-model="suggestionsQuery.search" ng-change="liveSuggestions()">
                             </div>
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
@@ -42,22 +42,38 @@
                                 <input type="text" class="form-control" ng-model="suggestionsQuery.top">
                             </div>
                         </div>
-                        <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                             <div class="form-group">
                                 <label>Filter</label>
                                 <input type="text" class="form-control" ng-model="suggestionsQuery.filter">
                             </div>
                         </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">
+                            <div class="form-group">
+                                <label>Suggester Name</label>
+                                <input type="text" class="form-control" ng-model="suggestionsQuery.suggesterName">
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
-                        <div class="col-lg-12">
-                            <input type="submit" value="Suggestions" class="btn btn-primary pull-left">
-                            <div class="checkbox pull-left" style="margin-left: 10px">
+                        <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                            <input type="submit" value="Suggest" class="btn btn-primary">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                            <div class="checkbox">
                                 <label>
                                     <input type="checkbox" ng-model="suggestionsQuery.fuzzy"> Fuzzy
                                 </label>
                             </div>
                         </div>
+                        <div class="col-lg-7 col-md-7 col-sm-10 col-xs-10">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" ng-model="live"> Live (execute query when typing.)
+                                </label>
+                            </div>
+                        </div>
+
                     </div>
                 </form>
             </div>
@@ -67,7 +83,7 @@
 
 <div class="row" ng-if="loading || results != null">
 
-    <div ng-class="col-lg-12">
+    <div class="col-lg-12">
         <div class="widget">
             <div class="widget-title">
                 <i class="fa fa-bars"></i> Results <span>({{ count }} results)</span>

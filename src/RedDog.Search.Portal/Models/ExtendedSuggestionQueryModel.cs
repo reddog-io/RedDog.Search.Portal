@@ -44,5 +44,11 @@
             get;
             set;
         }
+
+        public string SuggesterName
+        {
+            get;
+            set;
+        }        
     }
 }

@@ -83,7 +83,8 @@ namespace RedDog.Search.Portal.Controllers
                             {
                                 var field = index.Body.Fields.FirstOrDefault(f => f.Name == columnName);
                                 if (field == null)
-                                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Unknown field: " + field.Name);
+                                    continue; // Skip the field, because it has no mapping in the index.
+                                    //return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Unknown field: " + field.Name);
 
                                 if (field.Type == FieldType.StringCollection)
                                 {

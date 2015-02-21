@@ -166,4 +166,44 @@
             </div>
         </div>
     </div>
+
+    <div class="col-lg-12">
+        <div class="widget" cg-busy="{ promise:savingPromise, templateUrl: 'partials/loading.html' }">
+            <div class="widget-title">
+                <i class="fa fa-signal"></i> Suggesters
+                <a class="btn btn-sm btn-info pull-right" ng-click="newSuggester()">New</a>
+                <div class="clearfix"></div>
+            </div>
+            <div class="widget-body medium no-padding">
+                <div class="message" ng-if="(index.suggesters == null || index.suggesters.length == 0)">
+                    <div class="alert alert-warning">The index does not have any suggesters.</div>
+                </div>
+                <div class="table-responsive" ng-if="index.suggesters != null && index.suggesters.length > 0">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>SearchMode</th>
+                                <th>SourceFields</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="suggester in index.suggesters">
+                                <td>{{ suggester.name }}</td>
+                                <td>{{ suggester.searchMode }}</td>
+                                <td>{{ suggester.sourceField}}</td>
+                                <td>
+                                    <button class="btn btn-xs btn-info" ng-click="editSuggester(suggester);">
+                                        <i class="fa fa-wrench"></i> Edit
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <loading ng-if="loading"></loading>
+            </div>
+        </div>
+    </div>
 </div>
