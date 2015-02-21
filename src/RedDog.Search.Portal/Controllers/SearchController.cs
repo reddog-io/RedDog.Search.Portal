@@ -28,5 +28,19 @@ namespace RedDog.Search.Portal.Controllers
                 return Request.CreateResponse(result.StatusCode, result);
             return Request.CreateResponse(HttpStatusCode.OK, result);
         }
+
+        /// <summary>
+        /// GET api/search/{indexName}/nextlink.
+        /// </summary>
+        /// <returns>Search an index via nextlink.</returns>
+        [HttpGet]
+        [Route("{indexName}/next")]
+        public async Task<HttpResponseMessage> NextLink(string indexName, [FromUri]string nextlink)
+        {
+            var result = await _searchClient.SearchAsync(nextlink);
+            if (!result.IsSuccess)
+                return Request.CreateResponse(result.StatusCode, result);
+            return Request.CreateResponse(HttpStatusCode.OK, result);
+        }
     }
 }

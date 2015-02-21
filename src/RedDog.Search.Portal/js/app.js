@@ -496,36 +496,58 @@ angular.module('reddog.search').controller('IndexSearchCtrl', function ($scope, 
         { name: "any" },
         { name: "all" }
     ];
+
+    $scope.searchNextLink = function () {
+        $scope.loading = true;
+        $scope.error = null;
+        indexService.search($routeParams.indexName + '/next', { 'nextlink': $scope.nextLink }).then(function (data) {
+            processData(data);
+        }, function (data) {
+            $scope.error = angular.isDefined(data.error) ? data.error : data;
+        }).finally(function () {
+            $scope.loading = false;
+        });
+    }
+
     $scope.search = function () {
         $scope.loading = true;
         $scope.error = null;
         indexService.search($routeParams.indexName, $scope.searchQuery).then(function (data) {
-            $scope.results = data.value;
-
-            if (data['@odata.count'] > 0)
-                $scope.count = data['@odata.count'];
-            else
-                $scope.count = 'N/A';
-
-            if (data['@search.facets'] != null)
-                $scope.facets = data['@search.facets'];
-            else
-                $scope.facets = null;
-
-            // Dynamically load the fields.
-            $scope.fields = [];
-            if ($scope.results.length > 0) {
-                angular.forEach($scope.results[0], function (idx, fieldName) {
-                    if (!angular.isObject($scope.results[0][fieldName]) || Object.keys($scope.results[0][fieldName]).length > 0)
-                        $scope.fields.push(fieldName);
-                });
-            }
+            processData(data);
         }, function (data) {
             $scope.error = angular.isDefined(data.error) ? data.error : data;
         }).finally(function () {
             $scope.loading = false;
         });
     };
+
+    function processData(data) {
+        $scope.results = data.value;
+
+        if (data['@odata.count'] > 0)
+            $scope.count = data['@odata.count'];
+        else
+            $scope.count = 'N/A';
+
+        if (data['@search.facets'] != null)
+            $scope.facets = data['@search.facets'];
+        else
+            $scope.facets = null;
+
+        if (data['@odata.nextLink'] != null)
+            $scope.nextLink = data['@odata.nextLink'];
+        else
+            $scope.nextLink = null;
+
+        // Dynamically load the fields.
+        $scope.fields = [];
+        if ($scope.results.length > 0) {
+            angular.forEach($scope.results[0], function (idx, fieldName) {
+                if (!angular.isObject($scope.results[0][fieldName]) || Object.keys($scope.results[0][fieldName]).length > 0)
+                    $scope.fields.push(fieldName);
+            });
+        }
+    }
 });
 /**
  * Index suggestions.
@@ -544,7 +566,7 @@ angular.module('reddog.search').controller('IndexSuggestionsCtrl', function ($sc
             } else {
                 // Clear the results when ther is not search input.
                 $scope.results = null;
-            }            
+            }
         }
     }
 
@@ -627,7 +649,7 @@ angular.module('reddog.search').service('indexService', function ($http, $q) {
                     suggester.sourceField = suggester.sourceFields.join();
                 }
             });
-        }        
+        }
 
         if (index.corsOptions && index.corsOptions.allowedOrigins) {
             index.corsOptions.allowedOrigins = index.corsOptions.allowedOrigins.join();
